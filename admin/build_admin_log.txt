@@ -1,0 +1,19 @@
+﻿Running Gradle task 'assembleRelease'...                        
+Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 19072 bytes (98.8% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+flutter.bat : ../../runtime/vm/os_thread.cc: 364: error: Could not start thread DartWorker: 22 (The device does not 
+recognize the command.
+At line:4 char:1
++ & C:\flutter\bin\flutter.bat build apk --release --target-platform an ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (../../runtime/v...ze the command.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+)
+version=3.11.4 (stable) (Tue Mar 24 01:02:20 2026 -0700) on "windows_x64"
+pid=5540, thread=17380, isolate_group=(nil)(0000000000000000), isolate=(nil)(0000000000000000)
+os=windows, arch=x64, comp=no, sim=no
+isolate_instructions=0, vm_instructions=7ff72b798400
+fp=2e965fecc0, sp=2e965fec78, pc=7ff72ba7cca3
+  pc 0x00007ff72ba7cca3 fp 0x0000002e965fecc0 Dart_DetectNullSafety+0x2dc1c3
+-- End of DumpStackTrace

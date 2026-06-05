@@ -1,0 +1,42 @@
+# ===== Flutter / Dart =====
+**/build/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/ephemeral/
+*.iml
+
+# ===== Android / Gradle =====
+**/.gradle/
+**/.gradle_isolated/
+**/.cxx/
+**/local.properties
+**/key.properties
+*.keystore
+*.jks
+*.apk
+*.aab
+
+# ===== IDE =====
+**/.idea/
+.vscode/
+
+# ===== JVM crash dumps =====
+hs_err_pid*.log
+replay_pid*.log
+
+# ===== Python (backend) =====
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# ===== Secrets / muhit =====
+.env
+*.secret
+.db_secret
+*secret*.txt
+
+# ===== OS =====
+.DS_Store
+Thumbs.db

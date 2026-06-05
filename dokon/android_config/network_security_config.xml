@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Bizning API hozircha HTTP (109.123.253.238:8091).
+  Android sukut bo'yicha HTTP ni bloklaydi — shu fayl faqat O'Z serverimizga ruxsat beradi.
+  (Domen + HTTPS qo'shilgach bu fayl olib tashlanadi yoki yangilanadi.)
+-->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">109.123.253.238</domain>
+    </domain-config>
+</network-security-config>
