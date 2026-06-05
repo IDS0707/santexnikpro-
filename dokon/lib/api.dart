@@ -98,6 +98,35 @@ class OrderInfo {
       );
 }
 
+class BannerInfo {
+  final int id;
+  final String? title;
+  final String? subtitle;
+  final String? imageUrl;
+  final String? linkUrl;
+  final String? backgroundColor;
+  final bool isActive;
+  BannerInfo({
+    required this.id,
+    this.title,
+    this.subtitle,
+    this.imageUrl,
+    this.linkUrl,
+    this.backgroundColor,
+    this.isActive = true,
+  });
+  static String? _nz(dynamic v) => (v == null || '$v'.trim().isEmpty) ? null : '$v';
+  factory BannerInfo.fromJson(Map<String, dynamic> j) => BannerInfo(
+        id: j['id'] ?? 0,
+        title: _nz(j['title']),
+        subtitle: _nz(j['subtitle']),
+        imageUrl: _nz(j['image_url']),
+        linkUrl: _nz(j['link_url']),
+        backgroundColor: _nz(j['background_color']),
+        isActive: j['is_active'] ?? true,
+      );
+}
+
 // ---------------- API klient ----------------
 class ApiException implements Exception {
   final String message;
@@ -202,5 +231,10 @@ class Api {
       'bonus_item_id': bonusItemId,
       'points_cost': pointsCost,
     });
+  }
+
+  static Future<List<BannerInfo>> banners(int storeId) async {
+    final d = await _req('GET', '/banners?store_id=$storeId');
+    return (d as List).map((e) => BannerInfo.fromJson(e)).toList();
   }
 }

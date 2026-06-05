@@ -624,11 +624,16 @@ class _AdminShellState extends State<AdminShell> {
                                   ),
                                 );
                                 if (src == null) return;
-                                final image = await picker.pickImage(source: src);
+                                final image = await picker.pickImage(
+                                  source: src,
+                                  maxWidth: 1280,
+                                  imageQuality: 85,
+                                );
                                 if (image != null) {
                                   setLocalState(() {
                                     selectedImage = image;
-                                    imageController.text = image.path;
+                                    // fayl manba bo'ladi — URL maydonini tozalaymiz
+                                    imageController.clear();
                                   });
                                 }
                               },
@@ -636,6 +641,9 @@ class _AdminShellState extends State<AdminShell> {
                                 selectedImage = null;
                                 imageController.clear();
                               }),
+                              urlController: imageController,
+                              onUrlChanged: () =>
+                                  setLocalState(() => selectedImage = null),
                             );
 
                             final fields = Column(
@@ -3209,12 +3217,16 @@ class _ImagePickerArea extends StatelessWidget {
     required this.imageUrl,
     required this.onPick,
     required this.onClear,
+    required this.urlController,
+    required this.onUrlChanged,
   });
 
   final XFile? image;
   final String? imageUrl;
   final VoidCallback onPick;
   final VoidCallback onClear;
+  final TextEditingController urlController;
+  final VoidCallback onUrlChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -3307,6 +3319,25 @@ class _ImagePickerArea extends StatelessWidget {
             ),
           ),
         ],
+        const SizedBox(height: 10),
+        TextField(
+          controller: urlController,
+          keyboardType: TextInputType.url,
+          decoration: const InputDecoration(
+            labelText: 'yoki rasm havolasi (URL)',
+            hintText: 'https://...jpg',
+            prefixIcon: Icon(Icons.link_rounded),
+            isDense: true,
+          ),
+          onChanged: (_) => onUrlChanged(),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 4, left: 4),
+          child: Text(
+            'Galereya/kameradan yuklang yoki internetdagi rasm havolasini joylang',
+            style: TextStyle(fontSize: 11, color: Theme.of(context).hintColor),
+          ),
+        ),
       ],
     );
   }

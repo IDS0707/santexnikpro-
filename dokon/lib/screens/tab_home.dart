@@ -4,10 +4,12 @@ import '../icons.dart';
 import '../theme.dart';
 import '../util.dart';
 import '../widgets/glass.dart';
+import '../widgets/banner_carousel.dart';
 
 class HomeTab extends StatelessWidget {
   final List<Category> categories;
   final List<Product> products;
+  final List<BannerInfo> banners;
   final void Function(String filter) onPickCategory;
   final void Function(String query) onSearch;
   final VoidCallback onProducts, onCalculator, onQuickOrder, onBonus;
@@ -16,6 +18,7 @@ class HomeTab extends StatelessWidget {
     super.key,
     required this.categories,
     required this.products,
+    this.banners = const [],
     required this.onPickCategory,
     required this.onSearch,
     required this.onProducts,
@@ -40,29 +43,8 @@ class HomeTab extends StatelessWidget {
               suffix: IconButton(onPressed: onProducts, icon: const Icon(Icons.tune_rounded, color: AppColors.primary))),
         ),
         const SizedBox(height: 16),
-        // banner
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppColors.primary, AppColors.primaryDark]),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.4), blurRadius: 20, spreadRadius: -6, offset: const Offset(0, 8))],
-          ),
-          child: Row(children: [
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('Bugungi chegirmalar!', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800)),
-              const SizedBox(height: 8),
-              Text('${products.length}+ mahsulot · 24/7 buyurtma\nTez yetkazib berish mavjud',
-                  style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 12.5, height: 1.5)),
-              const SizedBox(height: 12),
-              GestureDetector(onTap: onProducts, child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
-                child: const Text('Xarid qilish', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700, fontSize: 12.5)))),
-            ])),
-            const Icon(Icons.water_drop_rounded, color: Colors.white24, size: 64),
-          ]),
-        ),
+        // reklama — admin bannerlari aylanib turadi (bo'lmasa, statik banner)
+        BannerCarousel(banners: banners, fallback: _promoBanner(context)),
         const SizedBox(height: 20),
         // Tez amallar
         const Text('Tez amallar', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
@@ -125,6 +107,32 @@ class HomeTab extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+
+  // Banner bo'lmaganda ko'rsatiladigan statik reklama
+  Widget _promoBanner(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppColors.primary, AppColors.primaryDark]),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.4), blurRadius: 20, spreadRadius: -6, offset: const Offset(0, 8))],
+      ),
+      child: Row(children: [
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text('Bugungi chegirmalar!', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800)),
+          const SizedBox(height: 8),
+          Text('${products.length}+ mahsulot · 24/7 buyurtma\nTez yetkazib berish mavjud',
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 12.5, height: 1.5)),
+          const SizedBox(height: 12),
+          GestureDetector(onTap: onProducts, child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+            child: const Text('Xarid qilish', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700, fontSize: 12.5)))),
+        ])),
+        const Icon(Icons.water_drop_rounded, color: Colors.white24, size: 64),
+      ]),
     );
   }
 

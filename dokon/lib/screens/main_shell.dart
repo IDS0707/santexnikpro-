@@ -12,6 +12,7 @@ import 'tab_profile.dart';
 import 'product_detail.dart';
 import 'quick_order.dart';
 import 'bonuslar.dart';
+import 'notifications_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -25,8 +26,14 @@ class _MainShellState extends State<MainShell> {
   String? _error;
   List<Product> _products = [];
   List<Category> _categories = [];
+  List<BannerInfo> _banners = [];
+  List<OrderInfo> _orders = [];
   String _filter = 'all';
   String _search = '';
+
+  // tugamagan (faol) buyurtmalar soni — qo'ng'iroq belgisiga chiqadi
+  int get _notifCount =>
+      _orders.where((o) => !{'completed', 'delivered', 'cancelled'}.contains(o.status)).length;
 
   @override
   void initState() {
@@ -36,14 +43,22 @@ class _MainShellState extends State<MainShell> {
 
   Future<void> _load() async {
     setState(() { _loading = true; _error = null; });
+    final st = context.read<AppState>();
+    final sid = st.storeId ?? 0;
     try {
-      final sid = context.read<AppState>().storeId ?? 0;
       final r = await Future.wait([Api.categories(sid), Api.products(sid)]);
       _categories = r[0] as List<Category>;
       _products = r[1] as List<Product>;
     } catch (e) {
       _error = '$e';
     }
+    // ixtiyoriy — xato bo'lsa ham bosh sahifa ishlayveradi
+    try {
+      _banners = (await Api.banners(sid)).where((b) => b.isActive).toList();
+    } catch (_) {}
+    try {
+      _orders = await Api.myOrders(st.userId ?? 0);
+    } catch (_) {}
     if (mounted) setState(() => _loading = false);
   }
 
@@ -58,6 +73,7 @@ class _MainShellState extends State<MainShell> {
       HomeTab(
         categories: _categories,
         products: _products,
+        banners: _banners,
         onPickCategory: _goProducts,
         onSearch: (q) => setState(() { _search = q; _filter = 'all'; _index = 1; }),
         onProducts: () => _goTab(1),
@@ -113,7 +129,9 @@ class _MainShellState extends State<MainShell> {
                   style: const TextStyle(fontSize: 11, color: AppColors.textDim), maxLines: 1, overflow: TextOverflow.ellipsis),
             ]),
           ),
-          _badgeBtn(Icons.notifications_none_rounded, 0, () => _goTab(4)),
+          _badgeBtn(st.themeMode == ThemeMode.dark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+              0, () => st.toggleTheme()),
+          _badgeBtn(Icons.notifications_none_rounded, _notifCount, () => _push(const NotificationsScreen())),
           _badgeBtn(Icons.shopping_cart_outlined, st.cartCount, () => _goTab(3)),
         ],
       ),

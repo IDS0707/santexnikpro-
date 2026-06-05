@@ -3,10 +3,10 @@ import '../theme.dart';
 import '../util.dart';
 
 class _CalcProd {
-  final String key, name, unit;
+  final String key, name, unit, asset;
   final double unitArea;
   final IconData icon;
-  const _CalcProd(this.key, this.name, this.unit, this.unitArea, this.icon);
+  const _CalcProd(this.key, this.name, this.unit, this.unitArea, this.icon, this.asset);
 }
 
 class _Room {
@@ -24,10 +24,9 @@ class CalculatorTab extends StatefulWidget {
 
 class _CalculatorTabState extends State<CalculatorTab> {
   static const prods = [
-    _CalcProd('penoplex', 'Penoplex (1200×600 mm)', 'dona', 0.72, Icons.view_in_ar),
-    _CalcProd('gidro', 'Gidro plyonka', 'm', 1, Icons.water_drop),
-    _CalcProd('gidropar', 'Gidroparoizolyatsiya', 'm', 1, Icons.water),
-    _CalcProd('falga', 'Falga', 'm', 1, Icons.receipt_long),
+    _CalcProd('penoplex', 'Penoplex (1200×600 mm)', 'dona', 0.72, Icons.view_in_ar, 'assets/calc/penoplex.jpg'),
+    _CalcProd('gidro', 'Gidro plyonka', 'm', 1, Icons.water_drop, 'assets/calc/gidro.jpg'),
+    _CalcProd('falga', 'Falga', 'm', 1, Icons.receipt_long, 'assets/calc/falga.jpg'),
   ];
   int _sel = 0;
   final _name = TextEditingController();
@@ -69,31 +68,58 @@ class _CalculatorTabState extends State<CalculatorTab> {
         Text("Xonalar bo'yicha kerakli material miqdorini aniqlang",
             style: TextStyle(color: AppColors.grayLight, fontSize: 12.5)),
         const SizedBox(height: 16),
-        // tabs
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
+        // material tanlash — rasmli kartalar
+        const Align(
+          alignment: Alignment.centerLeft,
+          child: Text('Materialni tanlang', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: List.generate(prods.length, (i) {
             final active = i == _sel;
-            return InkWell(
-              borderRadius: BorderRadius.circular(10),
-              onTap: () => setState(() {
-                _sel = i;
-                _calculated = false;
-              }),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                decoration: BoxDecoration(
-                  color: active ? AppColors.primary : Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: active ? AppColors.primary : Theme.of(context).dividerColor),
+            final cp = prods[i];
+            return Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(right: i < prods.length - 1 ? 10 : 0),
+                child: GestureDetector(
+                  onTap: () => setState(() {
+                    _sel = i;
+                    _calculated = false;
+                  }),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: active ? AppColors.primary.withValues(alpha: 0.10) : Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                          color: active ? AppColors.primary : Theme.of(context).dividerColor, width: active ? 2 : 1.5),
+                    ),
+                    child: Column(children: [
+                      Stack(children: [
+                        _matImage(cp),
+                        if (active)
+                          const Positioned(
+                            right: 2,
+                            top: 2,
+                            child: CircleAvatar(
+                                radius: 9,
+                                backgroundColor: AppColors.primary,
+                                child: Icon(Icons.check, size: 12, color: Colors.white)),
+                          ),
+                      ]),
+                      const SizedBox(height: 8),
+                      Text(_shortName(cp),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: 12, height: 1.1,
+                              color: active ? AppColors.primary : null)),
+                    ]),
+                  ),
                 ),
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Icon(prods[i].icon, size: 14, color: active ? Colors.white : AppColors.primary),
-                  const SizedBox(width: 7),
-                  Text(prods[i].name.split(' ').first,
-                      style: TextStyle(color: active ? Colors.white : null, fontWeight: FontWeight.w600, fontSize: 12.5)),
-                ]),
               ),
             );
           }),
@@ -148,6 +174,40 @@ class _CalculatorTabState extends State<CalculatorTab> {
           if (_calculated) _resultBox(total),
         ],
       ],
+    );
+  }
+
+  String _shortName(_CalcProd cp) {
+    switch (cp.key) {
+      case 'penoplex':
+        return 'Penoplex';
+      case 'gidro':
+        return 'Gidro plyonka';
+      case 'falga':
+        return 'Falga';
+    }
+    return cp.name;
+  }
+
+  // Material rasmi (assets/calc/...). Rasm bo'lmasa, ikon ko'rsatiladi.
+  Widget _matImage(_CalcProd cp) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Image.asset(
+        cp.asset,
+        height: 70,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => Container(
+          height: 70,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppColors.primary.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(cp.icon, color: AppColors.primary, size: 30),
+        ),
+      ),
     );
   }
 
